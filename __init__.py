@@ -5,15 +5,6 @@ from .progress_gui import ProgressWindow
 
 
 class TransferConfigWindow(QWidget):
-    selected_src_deck = ""
-    selected_target_deck = ""
-    deck_list = []
-    model_list = []
-    rows = []
-    transfer_rows = []
-    canceled = False
-    use_transfer_rev_log = False
-
     def __init__(self, deck_name_list, model_list):
         super(TransferConfigWindow, self).__init__()
 
@@ -21,6 +12,12 @@ class TransferConfigWindow(QWidget):
 
         self.deck_list = deck_name_list
         self.model_list = model_list
+        self.selected_src_deck = ""
+        self.selected_target_deck = ""
+        self.rows = []
+        self.transfer_rows = []
+        self.canceled = False
+        self.use_transfer_rev_log = False
 
         self.v_layout = QVBoxLayout(self)
 
