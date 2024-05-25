@@ -2,7 +2,7 @@
 an anki add-on to transfer scheduling info from cards to cards in batch.
 
 # Demo
-![demo](./demo.png)
+![demo](./assets/demo.png)
 
 # Download
 > Supported Anki Versions  
@@ -16,7 +16,7 @@ If you were linked to this page from the internet, please open Anki on your comp
 # Usage
 ### 1. Open this tool from Anki dropdown menu. `Tools - Transfer Scheduling Data`
 ### UI
-![UI](./ui.png)
+![UI](./assets/ui.png)
 
 ### 2. Choose Deck
 1) choose the source deck containing the source cards.
