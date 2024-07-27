@@ -95,9 +95,10 @@ class ProgressWindow(object):
         return self._win.wasCanceled()
 
     def finish(self):
-        self._win.hide()
         self._unset_busy()
-        self._win.destroy()
+        if self._win:
+            self._win.hide()
+            self._win.destroy()
 
     def _update(self, label, value, process=True):
         elapsed = time.time() - self._last_update
