@@ -2,22 +2,34 @@ from aqt import mw
 from aqt.utils import showInfo
 from aqt.qt import *
 from .progress_gui import ProgressWindow
+import re
 
+
+def abbrv(s):
+    return s.replace('something', 'sth').replace('somebody', 'sb')
+def extend(s):
+    return s.replace('sth', 'something').replace('sb', 'somebody')
+
+def remove_multiple_space(s):
+    return re.sub("\s+", " ", s)
 
 class TransferConfigWindow(QWidget):
+
     def __init__(self, deck_name_list, model_list):
         super(TransferConfigWindow, self).__init__()
+        self.selected_src_deck = ""
+        self.selected_target_deck = ""
+        self.deck_list = []
+        self.model_list = []
+        self.rows = []
+        self.transfer_rows = []
+        self.canceled = False
+        self.use_transfer_rev_log = False
 
         self.progress = ProgressWindow(mw)
 
         self.deck_list = deck_name_list
         self.model_list = model_list
-        self.selected_src_deck = ""
-        self.selected_target_deck = ""
-        self.rows = []
-        self.transfer_rows = []
-        self.canceled = False
-        self.use_transfer_rev_log = False
 
         self.v_layout = QVBoxLayout(self)
 
@@ -285,9 +297,13 @@ class TransferConfigWindow(QWidget):
                     success = False
                     while not success and rows_delta[idx] <= 10:
                         sql = "INSERT INTO revlog(id,cid,usn,ease,ivl,lastIvl,factor,time,type) VALUES "
-                        row[1:1] = [cid, -1]
-                        row[0] = int(row[0]) + 1 + offset + rows_delta[idx]
-                        sql += "(%s)" % ",".join(map(str, row))
+                        r = row.copy()
+                        r[1:1] = [cid, -1]
+                        r[0] = int(r[0]) + 1 + offset + rows_delta[idx]
+                        self.console.append(
+                            ",".join(map(str, r))
+                        )
+                        sql += "(%s)" % ",".join(map(str, r))
                         success = self.try_sql(sql)
                         if not success:
                             rows_delta[idx] = rows_delta[idx] + 1
@@ -324,10 +340,15 @@ class TransferConfigWindow(QWidget):
 
                 self.update_progress(idx + 1)
 
-                card = mw.col.get_card(cid)
-                query = f"deck:{self.selected_target_deck} card:{target_card_tmpl} {target_compare_field}:{card.note()[src_compare_field]}"
-                target_card_ids = mw.col.find_cards(query)
-                target_cards = [mw.col.get_card(d) for d in target_card_ids]
+                try:
+                    card = mw.col.get_card(cid)
+                    src_cmp_field_value = remove_multiple_space(card.note()[src_compare_field].strip())
+                    query = f'deck:{self.selected_target_deck} card:{target_card_tmpl} ("{target_compare_field}:{src_cmp_field_value}" OR "{target_compare_field}:{abbrv(src_cmp_field_value)}" OR "{target_compare_field}:{extend(src_cmp_field_value)}")'
+                    target_card_ids = mw.col.find_cards(query)
+                    target_cards = [mw.col.get_card(d) for d in target_card_ids]
+                except Exception:
+                    self.console.append(f"failed to transfer card {cid}")
+                    continue
 
                 self.transfer_card_info(card, target_cards)
                 if self.use_transfer_rev_log:
