@@ -325,7 +325,7 @@ class TransferConfigWindow(QWidget):
         target_compare_field,
     ):
         src_card_ids = mw.col.find_cards(
-            f"deck:{self.selected_src_deck} card:{src_card_tmpl} -is:new"
+            f'"deck:{self.selected_src_deck}" "card:{src_card_tmpl}" -is:new'
         )
         self.console.append(f"found {len(src_card_ids)} studied cards")
 
@@ -343,7 +343,7 @@ class TransferConfigWindow(QWidget):
                 try:
                     card = mw.col.get_card(cid)
                     src_cmp_field_value = remove_multiple_space(card.note()[src_compare_field].strip())
-                    query = f'deck:{self.selected_target_deck} card:{target_card_tmpl} ("{target_compare_field}:{src_cmp_field_value}" OR "{target_compare_field}:{abbrv(src_cmp_field_value)}" OR "{target_compare_field}:{extend(src_cmp_field_value)}")'
+                    query = f'"deck:{self.selected_target_deck}" "card:{target_card_tmpl}" ("{target_compare_field}:{src_cmp_field_value}" OR "{target_compare_field}:{abbrv(src_cmp_field_value)}" OR "{target_compare_field}:{extend(src_cmp_field_value)}")'
                     target_card_ids = mw.col.find_cards(query)
                     target_cards = [mw.col.get_card(d) for d in target_card_ids]
                 except Exception:
