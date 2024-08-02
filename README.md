@@ -1,6 +1,9 @@
 # Transfer Scheduling Advanced
 an anki add-on to transfer scheduling info from cards to cards in batch.
 
+# Changelog
+> 2024.7.27 fix crash; support long comparing field; during comparing sth-somthing and sb-somebody would be no difference.
+
 # Demo
 ![demo](./assets/demo.png)
 
