@@ -1,10 +1,15 @@
 # Transfer Scheduling Advanced
 an anki add-on to transfer scheduling info from cards to cards in batch.
 
+# Changelog
+> 2024.8.2 fix not work when deck name has whitespace.  
+> 2024.7.27 fix crash; support long comparing field; during comparing sth-somthing and sb-somebody would be no difference.
+
 # Demo
 ![demo.png](https://i.postimg.cc/0NZCK9Tx/demo.png)
 
 # Usage
+### 0. Back up your decks
 ### 1. Open this tool from Anki dropdown menu. `Tools - Transfer Scheduling Data`
 ### UI
 ![UI.png](https://i.postimg.cc/B6nc3Rw6/ui.png)
