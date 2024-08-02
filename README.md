@@ -2,6 +2,7 @@
 an anki add-on to transfer scheduling info from cards to cards in batch.
 
 # Changelog
+> 2024.8.2 fix not work when deck name has whitespace.
 > 2024.7.27 fix crash; support long comparing field; during comparing sth-somthing and sb-somebody would be no difference.
 
 # Demo
