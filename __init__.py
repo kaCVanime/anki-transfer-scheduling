@@ -280,7 +280,11 @@ class TransferConfigWindow(QWidget):
             sql1 = "select {} from revlog where cid = ?".format(", ".join(columns))
             rev_result = mw.col.db.all(sql1, getattr(src_card, "id"))
 
+            # The primary key id is revise timestamp in anki
+            # try to duplicate the revlog rows with delta from id
             rows_delta = [0] * len(rev_result)
+            max_try = 20
+
             for offset, card in enumerate(target_cards):
                 cid = getattr(card, "id")
 
@@ -288,26 +292,29 @@ class TransferConfigWindow(QWidget):
                 mw.col.db.execute(delete_sql, cid)
 
                 for idx, row in enumerate(map(list, rev_result)):
-                    if rows_delta[idx] > 10:
+                    if rows_delta[idx] > max_try:
                         self.console.append(
                             f'Transfer revision history failed. src cid: {getattr(src_card, "id")}. target cid: {cid}. {idx+1}th rev log'
                         )
                         continue
 
                     success = False
-                    while not success and rows_delta[idx] <= 10:
+                    last_err = None
+                    while not success and rows_delta[idx] <= max_try:
                         sql = "INSERT INTO revlog(id,cid,usn,ease,ivl,lastIvl,factor,time,type) VALUES "
                         r = row.copy()
                         r[1:1] = [cid, -1]
                         r[0] = int(r[0]) + 1 + offset + rows_delta[idx]
-                        self.console.append(
-                            ",".join(map(str, r))
-                        )
                         sql += "(%s)" % ",".join(map(str, r))
-                        success = self.try_sql(sql)
-                        if not success:
+                        try:
+                            mw.col.db.execute(sql)
+                            success = True
+                            last_err = None
+                        except Exception as e:
+                            last_err = e
                             rows_delta[idx] = rows_delta[idx] + 1
                     if not success:
+                        self.console.append(str(last_err))
                         self.console.append(
                             f'Transfer revision history failed. src cid: {getattr(src_card, "id")}. target cid: {cid}. {idx+1}th rev log'
                         )
